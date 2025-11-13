@@ -1,0 +1,38 @@
+{% extends 'student_dashboard.html' %}
+{% block body %}
+<div class="container mt-5">
+  <h3>Upload / Register Your Face</h3>
+  <form method="POST">
+    <video id="stream" width="400" height="320" autoplay></video>
+    <canvas id="capture" width="400" height="320"></canvas>
+    <br>
+    <button id="btn-capture" type="button" class="btn btn-primary">Capture Image</button>
+    <br><br>
+    <div id="snapshot"></div>
+    <input type="hidden" id="img_hidden_form" name="img_hidden_form">
+    <br>
+    <button type="submit" class="btn btn-success">Save Face Image</button>
+  </form>
+</div>
+
+<script>
+var stream = document.getElementById("stream");
+var capture = document.getElementById("capture");
+var btnCapture = document.getElementById("btn-capture");
+var snapshot = document.getElementById("snapshot");
+
+navigator.mediaDevices.getUserMedia({ video: true })
+.then(streamObj => {
+  stream.srcObject = streamObj;
+})
+.catch(err => alert("Camera not accessible: " + err));
+
+btnCapture.addEventListener("click", () => {
+  var ctx = capture.getContext("2d");
+  ctx.drawImage(stream, 0, 0, capture.width, capture.height);
+  var img = capture.toDataURL("image/png");
+  document.getElementById("img_hidden_form").value = img.replace("data:image/png;base64,", "");
+  snapshot.innerHTML = `<img src="${img}" width="400" height="320" class="mt-2"/>`;
+});
+</script>
+{% endblock %}

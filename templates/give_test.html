@@ -1,0 +1,75 @@
+{% extends 'student_dashboard.html' %}
+{% block body %}
+{% from "includes/_formhelpers.html" import render_field %}
+<div class="row align-items-center d-flex  justify-content-center">
+  <div class="col-12 mb-4">
+      <div class="card border-light shadow-sm components-section align-items-center d-flex  justify-content-center">
+          <div class="card-body align-items-center d-flex justify-content-center">     
+              <div class="row mb-4">
+                    <div class="col-lg-12 col-sm-16">
+                      <h3 class="h3 text-center">EXAM LOGIN</h3>  
+                    </div>
+                    <div class="card-body">
+							        <form action="" method="POST" class="mt-4">
+                                    <div class="form-group">
+                                      {{render_field(form.test_id, class="form-control")}}
+                                    </div>
+                                    <div class="form-group">
+                                      {{render_field(form.password, class="form-control")}}
+                                    </div>
+
+                                    <div class="form-group">
+                                      <!-- Camera Section -->
+                                       <div class="form-group text-center">
+                                        <video id="video" width="370" height="320" autoplay></video><br>
+                                        <button type="button" id="capture" class="btn btn-primary mt-2">Capture Image</button>
+                                        <canvas id="canvas" style="display:none;"></canvas>
+                                        {{render_field(form.img_hidden_form, id="img_hidden_form")}}
+                                      </div>
+
+                                    <input type="submit" class="btn btn-block btn-primary" value="Login For Exam"/>
+                                  </div>
+                                  </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        
+<script>
+const video = document.getElementById('video');
+const canvas = document.getElementById('canvas');
+const imgHidden = document.getElementById('img_hidden_form');
+
+// Start webcam when page loads
+window.addEventListener('load', () => {
+  navigator.mediaDevices.getUserMedia({ video: true })
+    .then(stream => {
+      video.srcObject = stream;
+    })
+    .catch(err => {
+      alert("⚠️ Unable to access camera: " + err.message);
+    });
+});
+
+// Capture image and store base64
+document.getElementById('capture').addEventListener('click', () => {
+  const ctx = canvas.getContext('2d');
+  canvas.width = video.videoWidth;
+  canvas.height = video.videoHeight;
+  ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+  const dataUrl = canvas.toDataURL('image/png');
+  imgHidden.value = dataUrl.split(',')[1]; // remove 'data:image/png;base64,'
+
+  Swal.fire({
+    title: '✅ Image captured!',
+    text: 'Your face has been captured successfully.',
+    icon: 'success',
+    timer: 1200,
+    showConfirmButton: false
+  });
+});
+
+        </script>
+{% endblock %}
